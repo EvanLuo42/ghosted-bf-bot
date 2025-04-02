@@ -25,15 +25,15 @@ const bot = new Bot({
   }
 })
 
-const scheduleExpressionMinute = '* * * * *'
-const scheduleExpress = '0 */3 * * *'
+const scheduleExpressionTest = '* * * * *'
+const scheduleExpressProd = '0 */1 * * *'
 
 let job: CronJob
 
-if (process.env.ENV! === 'test') {
-  job = new CronJob(scheduleExpressionMinute, () => bot.post())
-} else if (process.env.ENV! === 'prod') {
-  job = new CronJob(scheduleExpress, bot.post)
+if (process.env.ENV === 'test') {
+  job = new CronJob(scheduleExpressionTest, () => bot.post())
+} else if (process.env.ENV === 'prod') {
+  job = new CronJob(scheduleExpressProd, bot.post)
 } else {
   throw new Error("Environment definition not exist! Should be either test or prod")
 }
