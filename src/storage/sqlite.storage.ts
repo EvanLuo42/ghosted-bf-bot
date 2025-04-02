@@ -7,4 +7,11 @@ export type SqliteOptions = {
 export class SqliteStorage implements StorageEngine {
   constructor(options: SqliteOptions) {
   }
+
+  get(): string {
+    return "";
+  }
+
+  push(time: Date, text: string): void {
+  }
 }

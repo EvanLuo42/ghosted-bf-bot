@@ -2,6 +2,7 @@ import * as dotenv from 'dotenv'
 import * as process from "node:process";
 import {Bot} from "./bot";
 import {CronJob} from "cron";
+import path from "node:path";
 
 dotenv.config({ path: "../.env" })
 
@@ -17,9 +18,9 @@ const bot = new Bot({
     model: "Pro/deepseek-ai/DeepSeek-R1"
   },
   storage: {
-    type: "json",
+    type: "text",
     options: {
-      path: "../posts.json"
+      path: path.join(path.resolve(process.cwd(), '..'), 'posts.txt')
     }
   }
 })
@@ -30,7 +31,7 @@ const scheduleExpress = '0 */3 * * *'
 let job: CronJob
 
 if (process.env.ENV! === 'test') {
-  job = new CronJob(scheduleExpressionMinute, bot.post)
+  job = new CronJob(scheduleExpressionMinute, () => bot.post())
 } else if (process.env.ENV! === 'prod') {
   job = new CronJob(scheduleExpress, bot.post)
 } else {

@@ -1,8 +1,9 @@
 import {AtpAgent} from "@atproto/api";
 import OpenAI from "openai";
-import {APIClient} from "openai/core";
 import {Options, StorageEngine, StorageTypeMap} from "./storage/interface.storage";
 import {StorageFactory} from "./storage/factory.storage";
+import * as fs from "node:fs";
+import path from "node:path";
 
 export type BskyOptions = {
   baseUrl: string
@@ -29,7 +30,7 @@ export type BotOptions<StorageType extends keyof StorageTypeMap> = {
 
 export class Bot<StorageType extends keyof StorageTypeMap> {
   bskyAgent: AtpAgent
-  llmClient: APIClient
+  llmClient: OpenAI
   storage: StorageEngine
   options: BotOptions<StorageType>
 
@@ -46,7 +47,23 @@ export class Bot<StorageType extends keyof StorageTypeMap> {
   }
 
   public async post() {
+    if (!this.llmClient) {
+      throw new Error("LLM client or chat is not initialized.");
+    }
+    const completion = await this.llmClient.chat.completions.create({
+      model: this.options.llm.model,
+      messages: [
+        { role: 'system', content: this.readInstruction() },
+        { role: 'user', content: this.storage.get() }
+      ]
+    })
+    await this._post(completion.choices[0].message.content!)
+    this.storage.push(new Date(), completion.choices[0].message.content!)
+    console.log(`Posted a post: ${completion.choices[0].message.content!}`)
+  }
 
+  private readInstruction() {
+    return fs.readFileSync(path.join(path.resolve(process.cwd(), '..'), 'instruction_prompt.txt'), 'utf-8')
   }
 
   private async _post(text: string) {
