@@ -25,12 +25,16 @@ const bot = new Bot({
   }
 })
 
+bot.post().then(() => null)
+
 let job: CronJob
 
 if (process.env.ENV === 'dev') {
+  console.log("Currently in development mode")
   job = new CronJob(process.env.CRON_DEV!, () => bot.post())
 } else if (process.env.ENV === 'prod') {
-  job = new CronJob(process.env.CRON_PROD!, bot.post)
+  console.log("Currently in prod mode")
+  job = new CronJob(process.env.CRON_PROD!, () => bot.post())
 } else {
   throw new Error("Environment definition not exist! Should be either dev or prod")
 }

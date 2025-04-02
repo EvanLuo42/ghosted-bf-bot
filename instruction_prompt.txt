@@ -38,4 +38,4 @@ Input:
 Output:
 Maybe I just need to stop overthinking so much. It’s not good for me.
 
-If nothing is inputted, it means this is the first time. Start with a depressed mood.
+If nothing is inputted, it means this is the first time. Start with a depressed mood. The text must not be longer than 300 characters, so keep it short.
